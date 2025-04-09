@@ -124,6 +124,37 @@ public:
             cout << "Error deleting employee: " << e.what() << endl;
         }
     }
+
+    bool checkId(int id) {
+        sql::PreparedStatement* pstmt = NULL;
+        sql::ResultSet* res = NULL;
+        try {
+            // Prepare the query to check for the employee's existence by counting rows
+            pstmt = con->prepareStatement("SELECT COUNT(*) FROM employees WHERE id = ?");
+            pstmt->setInt(1, id);
+
+            // Execute the query and get the result
+            res = pstmt->executeQuery();
+
+            // Check if the count of rows is greater than 0 (employee exists)
+            if (res->next() && res->getInt(1) > 0) {
+                delete res;
+                delete pstmt;
+                return true;
+            }
+            else {
+                cout << "No employee found with id " << id << endl;
+                delete res;
+                delete pstmt;
+                return false;
+            }
+        }
+        catch (sql::SQLException& e) {
+            cout << "Error checking Id of employee: " << e.what() << endl;
+            delete pstmt; // Ensure pstmt is deleted in case of error
+            return false; // Handle error and return false
+        }
+    }
 };
 
 // Main function
@@ -165,15 +196,17 @@ int main() {
         case 3:
             cout << "Enter Employee ID to Update: ";
             cin >> id;
-            cout << "Enter New Name: ";
-            cin >> name;
-            cout << "Enter New Age: ";
-            cin >> age;
-            cout << "Enter New Department: ";
-            cin >> department;
-            cout << "Enter New Salary: ";
-            cin >> salary;
-            empDB.updateEmployee(id, name, age, department, salary);
+            if (empDB.checkId(id)) {
+                cout << "Enter New Name: ";
+                cin >> name;
+                cout << "Enter New Age: ";
+                cin >> age;
+                cout << "Enter New Department: ";
+                cin >> department;
+                cout << "Enter New Salary: ";
+                cin >> salary;
+                empDB.updateEmployee(id, name, age, department, salary);
+            }
             break;
 
         case 4:
