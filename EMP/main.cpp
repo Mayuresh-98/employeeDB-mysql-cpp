@@ -11,7 +11,7 @@ using namespace std;
 // Database connection details
 const string SERVER = "tcp://127.0.0.1:3306";
 const string USERNAME = "root";
-const string PASSWORD = "REMOVED";  // Change this
+const string PASSWORD = "your_password";  // Change this
 const string DATABASE = "employee_db";
 
 class EmployeeDB {
